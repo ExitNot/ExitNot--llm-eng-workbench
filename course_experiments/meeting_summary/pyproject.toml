@@ -1,0 +1,21 @@
+[project]
+name = "meeting-summary"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "dotenv>=0.9.9",
+    "huggingface-hub>=0.35.0",
+    "numpy>=2.2.6",
+    "sentencepiece>=0.2.1",
+    "torch>=2.8.0",
+    "torchaudio>=2.8.0",
+    "transformers>=4.56.2",
+]
+
+[dependency-groups]
+jupyter = [
+    "jupyter",
+    "ipykernel",
+]
