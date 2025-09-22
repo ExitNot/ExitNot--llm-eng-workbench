@@ -5,17 +5,29 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "accelerate>=1.10.1",
     "dotenv>=0.9.9",
     "huggingface-hub>=0.35.0",
     "numpy>=2.2.6",
+    "optimum-quanto>=0.2.7",
     "sentencepiece>=0.2.1",
     "torch>=2.8.0",
     "torchaudio>=2.8.0",
     "transformers>=4.56.2",
+    "pyyaml>=6.0",
+    "gradio>=4.0.0",
+    "librosa>=0.10.0",
 ]
 
 [dependency-groups]
 jupyter = [
     "jupyter",
     "ipykernel",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
 ]

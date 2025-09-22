@@ -1,19 +1,31 @@
-# Meeting Summary Pipeline
+# Meeting Summary - AI-Powered Meeting Minutes Generator
 
-A Python-based pipeline that transforms audio recordings into structured meeting summaries using advanced speech-to-text and natural language processing models.
+A Python-based project to research quantized models and pipeline approaches, featuring a user-friendly Gradio web interface. Main focus is meeting summarization
 
 ## Overview
 
-This project implements an example of meeting summary pipeline that:
-- Converts audio files to text using Distil-Whisper (a distilled version of OpenAI's Whisper model)
-- Processes long-form audio recordings (>30 seconds) efficiently
-- Generates structured meeting summaries from transcribed text
+This project provides a comprehensive meeting summarization system that:
+- **Quantized Models**: Memory-efficient large language models (Llama 3.1 8B) with 8-bit quantization
+- **Pipeline Models**: Specialized summarization models (DistilBART) with automatic chunking
+- **Web Interface**: User-friendly Gradio UI for testing and production use
+- **Flexible Configuration**: Preset configurations and custom model settings
 
-The pipeline is designed to work with various audio formats and can handle lengthy meeting recordings through chunked processing.
+The system is designed to handle various meeting transcription lengths and can automatically chunk long texts for optimal processing.
 
-## Models Used
+## Available Models
 
-- **Distil-Whisper (distil-medium.en)**: A distilled version of Whisper that's 49% smaller and 6x faster while maintaining accuracy
+### Quantized Models (using optimum-quanto)
+- **Llama 3.1 8B Instruct**: High-quality summaries with 8-bit quantization for memory efficiency
+- Automatic device detection (CPU, CUDA, MPS)
+- Context-aware chat-based summarization
+
+### Pipeline Models  
+- **DistilBART-CNN**: Specialized summarization model with automatic chunking
+- Fast inference optimized for meeting transcriptions
+- Handles long documents through intelligent text segmentation
+
+### ASR Models (for reference)
+- **Distil-Whisper (distil-medium.en)**: For audio-to-text conversion (49% smaller, 6x faster than Whisper)
 
 ## Prerequisites
 
@@ -47,22 +59,112 @@ The pipeline is designed to work with various audio formats and can handle lengt
 
 ## Usage
 
-### Running the Pipeline
+### 🚀 Web Interface (Recommended)
 
-#### Option 1: Using Jupyter Notebook (Recommended)
+Launch the Gradio web interface for an intuitive experience:
+
+```bash
+# Start local web interface
+python meet-mins.py
+
+# Or with custom settings
+python meet-mins.py --server-port 8080 --share --debug
+```
+
+**Command line options:**
+- `--share`: Create a public shareable link
+- `--server-name`: Server IP to bind to (default: 127.0.0.1)  
+- `--server-port`: Server port (default: 7860)
+- `--debug`: Enable debug mode
+
+Navigate to `http://localhost:7860` in your browser and:
+1. **Audio Input** (Optional): Upload audio files or record directly using your microphone
+2. **Transcribe Audio**: Convert audio to text using Distil-Whisper ASR model
+3. **Choose Model Preset**: Select from fast summary, quality summary, or Llama models
+4. **Generate Summary**: Click the generate button and wait for results
+5. **Review Output**: Get formatted meeting minutes with metadata
+
+### 💻 Programmatic Usage
+
+```python
+from meeting_summarizer import SummarizerFactory
+
+# Quick start with preset
+summarizer = SummarizerFactory.create_summarizer("fast_summary")
+
+with summarizer:
+    summary = summarizer.summarize(transcription_text)
+    print(summary)
+
+# Custom configuration
+from meeting_summarizer import SummarizerConfig, SummarizerType
+
+config = SummarizerConfig(
+    model_name="sshleifer/distilbart-cnn-12-6",
+    summarizer_type=SummarizerType.PIPELINE,
+    max_chunk_tokens=800
+)
+
+summarizer = SummarizerFactory.create_from_config(config)
+```
+
+### 📓 Jupyter Notebooks
+
+Explore detailed examples and the original pipeline:
+
 ```bash
 # Start Jupyter with the project dependencies
 uv run --group jupyter jupyter lab notebooks/meeting-minutes.ipynb
 ```
-The notebook contains explanation of pipeline
+The notebook contains the original pipeline implementation and detailed explanations.
 
-#### Option 2: Using the Agent **Not Implemented**
+## 🎯 Available Presets
+
+| Preset | Model | Description | Best For |
+|--------|-------|-------------|----------|
+| `fast_summary` | DistilBART | Quick summarization, optimized for speed | Testing, rapid prototyping |
+| `quality_summary` | DistilBART | High-quality with better parameters | Production use, balanced speed/quality |
+| `llama_8b` | Llama 3.1 8B | 8-bit quantized for balanced performance | High-quality summaries with good performance |
+| `apple_silicon` | Llama 3.1 8B | Optimized for M1/M2/M3 Macs | Apple Silicon devices |
+| `cuda_optimized` | Llama 3.1 8B | Optimized for NVIDIA GPUs | CUDA-enabled systems |
+
+## 🔧 Features
+
+- **Complete Audio-to-Summary Pipeline**: Upload audio files or record directly in the web interface
+- **Advanced ASR**: Distil-Whisper model for fast, accurate speech-to-text conversion
+- **Long Audio Support**: Automatic chunked processing for recordings longer than 30 seconds
+- **Abstraction Layer**: Clean interface supporting multiple summarization approaches
+- **Memory Efficient**: 8-bit quantization using optimum-quanto (cross-platform compatible)
+- **Automatic Chunking**: Handles long transcriptions through intelligent text segmentation
+- **Device Optimization**: Auto-detects and optimizes for CPU, CUDA, and Apple Silicon
+- **Web Interface**: User-friendly Gradio UI with audio upload/recording and sample transcriptions
+- **Flexible Configuration**: JSON/YAML config files and preset management
+- **Context Management**: Automatic resource cleanup and model management
 
 ### Processing Your Own Audio Files
 
+**Option 1: Web Interface (Recommended)**
+1. Launch the web interface: `python meet-mins.py`
+2. Upload your audio file or record directly using the microphone
+3. Click "Transcribe Audio" to convert speech to text
+4. Choose a summarization preset and generate meeting minutes
+
+**Option 2: Jupyter Notebook**
 1. Place your audio file in the `extra/` directory
 2. Update the `audio_file_name` variable in the notebook
-3. Run the pipeline
+3. Run the pipeline to get transcription, then use the web interface or package for summarization
+
+**Option 3: Programmatic**
+```python
+# Complete pipeline example
+from meeting_summarizer import SummarizerFactory
+
+# For audio files, use the web interface or notebook
+# For existing transcriptions:
+summarizer = SummarizerFactory.create_summarizer("fast_summary")
+with summarizer:
+    summary = summarizer.summarize(transcription_text)
+```
 
 Supported audio formats include MP3, WAV, M4A, and other common formats.
 
