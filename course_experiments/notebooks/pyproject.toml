@@ -1,0 +1,14 @@
+[project]
+name = "notebooks"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "jupyter",
+    "ipykernel",
+    "dotenv>=0.9.9",
+    "openai>=1.109.0",
+    "gradio>=5.47.0",
+    "google-genai>=1.38.0",
+]
